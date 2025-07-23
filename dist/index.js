@@ -24151,7 +24151,7 @@ const internals = {
         '[': ']'
     },
 
-    numberRx: /^(?:[0-9]*\.?[0-9]*){1}$/,
+    numberRx: /^(?:[0-9]*(\.[0-9]*)?){1}$/,
     tokenRx: /^[\w\$\#\.\@\:\{\}]+$/,
 
     symbol: Symbol('formula'),
