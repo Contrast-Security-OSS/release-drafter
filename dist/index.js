@@ -41573,27 +41573,6 @@ function escapeHtml(string) {
 
 /***/ }),
 
-/***/ 98691:
-/***/ ((module) => {
-
-"use strict";
-
-
-module.exports = string => {
-	if (typeof string !== 'string') {
-		throw new TypeError('Expected a string');
-	}
-
-	// Escape characters with special meaning either inside or outside character sets.
-	// Use a simple backslash escape when it’s always valid, and a \unnnn escape when the simpler form would be disallowed by Unicode patterns’ stricter grammar.
-	return string
-		.replace(/[|\\{}()[\]^$+*?.]/g, '\\$&')
-		.replace(/-/g, '\\x2d');
-};
-
-
-/***/ }),
-
 /***/ 69972:
 /***/ ((module, __unused_webpack_exports, __nccwpck_require__) => {
 
@@ -143078,7 +143057,7 @@ exports.paginate = paginate
 /***/ ((__unused_webpack_module, exports, __nccwpck_require__) => {
 
 const compareVersions = __nccwpck_require__(89296)
-const regexEscape = __nccwpck_require__(98691)
+const regexEscape = __nccwpck_require__(5378)
 
 const { getVersionInfo } = __nccwpck_require__(49914)
 const { template } = __nccwpck_require__(47282)
@@ -143829,7 +143808,7 @@ exports.sortPullRequests = sortPullRequests
 
 const { log } = __nccwpck_require__(71911)
 const regexParser = __nccwpck_require__(14542)
-const regexEscape = __nccwpck_require__(98691)
+const regexEscape = __nccwpck_require__(5378)
 
 /**
  * replaces all uppercase dollar templates with their string representation from object
@@ -145399,6 +145378,29 @@ exports.bgWhiteBright = init(107, 49)
 
 /***/ }),
 
+/***/ 5378:
+/***/ ((__unused_webpack___webpack_module__, __webpack_exports__, __nccwpck_require__) => {
+
+"use strict";
+__nccwpck_require__.r(__webpack_exports__);
+/* harmony export */ __nccwpck_require__.d(__webpack_exports__, {
+/* harmony export */   "default": () => (/* binding */ escapeStringRegexp)
+/* harmony export */ });
+function escapeStringRegexp(string) {
+	if (typeof string !== 'string') {
+		throw new TypeError('Expected a string');
+	}
+
+	// Escape characters with special meaning either inside or outside character sets.
+	// Use a simple backslash escape when it’s always valid, and a `\xnn` escape when the simpler form would be disallowed by Unicode patterns’ stricter grammar.
+	return string
+		.replace(/[|\\{}()[\]^$+*?.]/g, '\\$&')
+		.replace(/-/g, '\\x2d');
+}
+
+
+/***/ }),
+
 /***/ 31936:
 /***/ ((module) => {
 
@@ -145587,6 +145589,34 @@ module.exports = JSON.parse('[[[0,44],"disallowed_STD3_valid"],[[45,46],"valid"]
 /******/ 	}
 /******/ 	
 /************************************************************************/
+/******/ 	/* webpack/runtime/define property getters */
+/******/ 	(() => {
+/******/ 		// define getter functions for harmony exports
+/******/ 		__nccwpck_require__.d = (exports, definition) => {
+/******/ 			for(var key in definition) {
+/******/ 				if(__nccwpck_require__.o(definition, key) && !__nccwpck_require__.o(exports, key)) {
+/******/ 					Object.defineProperty(exports, key, { enumerable: true, get: definition[key] });
+/******/ 				}
+/******/ 			}
+/******/ 		};
+/******/ 	})();
+/******/ 	
+/******/ 	/* webpack/runtime/hasOwnProperty shorthand */
+/******/ 	(() => {
+/******/ 		__nccwpck_require__.o = (obj, prop) => (Object.prototype.hasOwnProperty.call(obj, prop))
+/******/ 	})();
+/******/ 	
+/******/ 	/* webpack/runtime/make namespace object */
+/******/ 	(() => {
+/******/ 		// define __esModule on exports
+/******/ 		__nccwpck_require__.r = (exports) => {
+/******/ 			if(typeof Symbol !== 'undefined' && Symbol.toStringTag) {
+/******/ 				Object.defineProperty(exports, Symbol.toStringTag, { value: 'Module' });
+/******/ 			}
+/******/ 			Object.defineProperty(exports, '__esModule', { value: true });
+/******/ 		};
+/******/ 	})();
+/******/ 	
 /******/ 	/* webpack/runtime/node module decorator */
 /******/ 	(() => {
 /******/ 		__nccwpck_require__.nmd = (module) => {
