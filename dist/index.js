@@ -115546,7 +115546,7 @@ const is_production_1 = __nccwpck_require__(78079);
 const setupAppFactory = (host, port) => async function setupApp(app, { getRouter }) {
     const setup = new manifest_creation_1.ManifestCreation();
     // If not on Glitch or Production, create a smee URL
-    if (!is_production_1.isProduction() &&
+    if (!(0, is_production_1.isProduction)() &&
         !(process.env.PROJECT_DOMAIN ||
             process.env.WEBHOOK_PROXY_URL ||
             process.env.NO_SMEE_SETUP === "true")) {
@@ -115556,7 +115556,7 @@ const setupAppFactory = (host, port) => async function setupApp(app, { getRouter
         throw new Error("getRouter is required to use the setup app");
     }
     const route = getRouter();
-    route.use(logging_middleware_1.getLoggingMiddleware(app.log));
+    route.use((0, logging_middleware_1.getLoggingMiddleware)(app.log));
     printWelcomeMessage(app, host, port);
     route.get("/probot", async (req, res) => {
         const baseUrl = getBaseUrl(req);
@@ -115571,7 +115571,7 @@ const setupAppFactory = (host, port) => async function setupApp(app, { getRouter
         const response = await setup.createAppFromCode(code);
         // If using glitch, restart the app
         if (process.env.PROJECT_DOMAIN) {
-            child_process_1.exec("refresh", (error) => {
+            (0, child_process_1.exec)("refresh", (error) => {
                 if (error) {
                     app.log.error(error);
                 }
@@ -115593,7 +115593,7 @@ const setupAppFactory = (host, port) => async function setupApp(app, { getRouter
             res.status(400).send("appId and/or pem and/or webhook_secret missing");
             return;
         }
-        update_dotenv_1.default({
+        (0, update_dotenv_1.default)({
             APP_ID: appId,
             PRIVATE_KEY: `"${pem}"`,
             WEBHOOK_SECRET: webhook_secret,
@@ -115675,7 +115675,7 @@ const get_authenticated_octokit_1 = __nccwpck_require__(88916);
  * @returns An authenticated GitHub API client
  */
 async function auth(state, installationId, log) {
-    return get_authenticated_octokit_1.getAuthenticatedOctokit(Object.assign({}, state, log ? { log } : null), installationId);
+    return (0, get_authenticated_octokit_1.getAuthenticatedOctokit)(Object.assign({}, state, log ? { log } : null), installationId);
 }
 exports.auth = auth;
 //# sourceMappingURL=auth.js.map
@@ -115715,7 +115715,7 @@ function readCliOptions(argv) {
         .parse(argv);
     const { app: appId, privateKey: privateKeyPath, redisUrl, ...options } = commander_1.default;
     return {
-        privateKey: get_private_key_1.getPrivateKey({ filepath: privateKeyPath }) || undefined,
+        privateKey: (0, get_private_key_1.getPrivateKey)({ filepath: privateKeyPath }) || undefined,
         appId,
         redisConfig: redisUrl,
         ...options,
@@ -115735,7 +115735,7 @@ Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.readEnvOptions = void 0;
 const get_private_key_1 = __nccwpck_require__(97743);
 function readEnvOptions(env = process.env) {
-    const privateKey = get_private_key_1.getPrivateKey({ env });
+    const privateKey = (0, get_private_key_1.getPrivateKey)({ env });
     const logFormat = env.LOG_FORMAT || (env.NODE_ENV === "production" ? "json" : "pretty");
     return {
         args: [],
@@ -115797,7 +115797,7 @@ class Context {
         this.id = event.id;
         this.payload = event.payload;
         this.octokit = octokit;
-        this.log = alias_log_1.aliasLog(log);
+        this.log = (0, alias_log_1.aliasLog)(log);
     }
     /**
      * Return the `owner` and `repo` params for making API requests against a
@@ -115951,7 +115951,7 @@ exports.createNodeMiddleware = void 0;
 const webhooks_1 = __nccwpck_require__(18513);
 function createNodeMiddleware(appFn, { probot, webhooksPath }) {
     probot.load(appFn);
-    return webhooks_1.createNodeMiddleware(probot.webhooks, {
+    return (0, webhooks_1.createNodeMiddleware)(probot.webhooks, {
         path: webhooksPath || "/",
     });
 }
@@ -115992,7 +115992,7 @@ const DEFAULTS = {
  * @param env defaults to process.env
  */
 function createProbot({ overrides = {}, defaults = {}, env = process.env, } = {}) {
-    const privateKey = get_private_key_1.getPrivateKey({ env });
+    const privateKey = (0, get_private_key_1.getPrivateKey)({ env });
     const envWithDefaults = { ...DEFAULTS, ...env };
     const envOptions = {
         logLevel: envWithDefaults.LOG_LEVEL,
@@ -116016,7 +116016,7 @@ function createProbot({ overrides = {}, defaults = {}, env = process.env, } = {}
         logMessageKey: envWithDefaults.LOG_MESSAGE_KEY,
         sentryDsn: envWithDefaults.SENTRY_DSN,
     };
-    const log = get_log_1.getLog(logOptions).child({ name: "server" });
+    const log = (0, get_log_1.getLog)(logOptions).child({ name: "server" });
     return new probot_1.Probot({
         log: log.child({ name: "probot" }),
         ...probotOptions,
@@ -116126,10 +116126,10 @@ function getLog(options = {}) {
         name: "probot",
         messageKey: logMessageKey || "msg",
     };
-    const transform = pino_2.getTransformStream(getTransformStreamOptions);
+    const transform = (0, pino_2.getTransformStream)(getTransformStreamOptions);
     // @ts-ignore TODO: check out what's wrong here
     transform.pipe(pino_1.default.destination(1));
-    const log = pino_1.default(pinoOptions, transform);
+    const log = (0, pino_1.default)(pinoOptions, transform);
     return log;
 }
 exports.getLog = getLog;
@@ -116159,7 +116159,11 @@ exports.isProduction = isProduction;
 
 var __createBinding = (this && this.__createBinding) || (Object.create ? (function(o, m, k, k2) {
     if (k2 === undefined) k2 = k;
-    Object.defineProperty(o, k2, { enumerable: true, get: function() { return m[k]; } });
+    var desc = Object.getOwnPropertyDescriptor(m, k);
+    if (!desc || ("get" in desc ? !m.__esModule : desc.writable || desc.configurable)) {
+      desc = { enumerable: true, get: function() { return m[k]; } };
+    }
+    Object.defineProperty(o, k2, desc);
 }) : (function(o, m, k, k2) {
     if (k2 === undefined) k2 = k;
     o[k2] = m[k];
@@ -116295,6 +116299,7 @@ class ManifestCreation {
         }
         catch (error) {
             // App config does not exist, which is ok.
+            // @ts-ignore - in theory error can be anything
             if (error.code !== "ENOENT") {
                 throw error;
             }
@@ -116338,7 +116343,7 @@ class ManifestCreation {
     }
     async updateEnv(env) {
         // Needs to be public due to tests
-        return update_dotenv_1.default(env);
+        return (0, update_dotenv_1.default)(env);
     }
     get createAppUrl() {
         const githubHost = process.env.GHE_HOST || `github.com`;
@@ -116461,14 +116466,14 @@ function getProbotOctokitWithDefaults(options) {
             appId: options.appId,
             privateKey: options.privateKey,
         };
-    const octokitThrottleOptions = get_octokit_throttle_options_1.getOctokitThrottleOptions({
+    const octokitThrottleOptions = (0, get_octokit_throttle_options_1.getOctokitThrottleOptions)({
         log: options.log,
         redisConfig: options.redisConfig,
     });
     let defaultOptions = {
         auth: authOptions,
         log: options.log.child
-            ? alias_log_1.aliasLog(options.log.child({ name: "octokit" }))
+            ? (0, alias_log_1.aliasLog)(options.log.child({ name: "octokit" }))
             : options.log,
     };
     if (options.baseUrl) {
@@ -116513,7 +116518,7 @@ function getWebhooks(state) {
         secret: state.webhooks.secret,
         transform: octokit_webhooks_transform_1.webhookTransform.bind(null, state),
     });
-    webhooks.onError(get_error_handler_1.getErrorHandler(state.log));
+    webhooks.onError((0, get_error_handler_1.getErrorHandler)(state.log));
     return webhooks;
 }
 exports.getWebhooks = getWebhooks;
@@ -116643,7 +116648,7 @@ class Probot {
         options.secret = options.secret || "development";
         let level = options.logLevel;
         const logMessageKey = options.logMessageKey;
-        this.log = alias_log_1.aliasLog(options.log || get_log_1.getLog({ level, logMessageKey }));
+        this.log = (0, alias_log_1.aliasLog)(options.log || (0, get_log_1.getLog)({ level, logMessageKey }));
         // TODO: support redis backend for access token cache if `options.redisConfig`
         const cache = new lru_cache_1.default({
             // cache max. 15000 tokens, that will use less than 10mb memory
@@ -116651,7 +116656,7 @@ class Probot {
             // Cache for 1 minute less than GitHub expiry
             maxAge: 1000 * 60 * 59,
         });
-        const Octokit = get_probot_octokit_with_defaults_1.getProbotOctokitWithDefaults({
+        const Octokit = (0, get_probot_octokit_with_defaults_1.getProbotOctokitWithDefaults)({
             githubToken: options.githubToken,
             Octokit: options.Octokit || probot_octokit_1.ProbotOctokit,
             appId: Number(options.appId),
@@ -116677,7 +116682,7 @@ class Probot {
             port: options.port,
         };
         this.auth = auth_1.auth.bind(null, this.state);
-        this.webhooks = get_webhooks_1.getWebhooks(this.state);
+        this.webhooks = (0, get_webhooks_1.getWebhooks)(this.state);
         this.on = this.webhooks.on;
         this.onAny = this.webhooks.onAny;
         this.onError = this.webhooks.onError;
@@ -116696,14 +116701,14 @@ class Probot {
         this.log.debug({ event }, "Webhook received");
         return this.webhooks.receive(event);
     }
-    async load(appFn) {
+    async load(appFn, options = {}) {
         if (Array.isArray(appFn)) {
             for (const fn of appFn) {
                 await this.load(fn);
             }
             return;
         }
-        return appFn(this, {});
+        return appFn(this, options);
     }
 }
 exports.Probot = Probot;
@@ -116738,9 +116743,9 @@ const is_production_1 = __nccwpck_require__(78079);
  */
 async function run(appFnOrArgv, additionalOptions) {
     (__nccwpck_require__(12437).config)();
-    const envOptions = read_env_options_1.readEnvOptions(additionalOptions === null || additionalOptions === void 0 ? void 0 : additionalOptions.env);
+    const envOptions = (0, read_env_options_1.readEnvOptions)(additionalOptions === null || additionalOptions === void 0 ? void 0 : additionalOptions.env);
     const cliOptions = Array.isArray(appFnOrArgv)
-        ? read_cli_options_1.readCliOptions(appFnOrArgv)
+        ? (0, read_cli_options_1.readCliOptions)(appFnOrArgv)
         : {};
     const { 
     // log options
@@ -116758,7 +116763,7 @@ async function run(appFnOrArgv, additionalOptions) {
         logMessageKey,
         sentryDsn,
     };
-    const log = get_log_1.getLog(logOptions);
+    const log = (0, get_log_1.getLog)(logOptions);
     const probotOptions = {
         appId,
         privateKey,
@@ -116777,7 +116782,7 @@ async function run(appFnOrArgv, additionalOptions) {
     };
     let server;
     if (!appId || !privateKey) {
-        if (is_production_1.isProduction()) {
+        if ((0, is_production_1.isProduction)()) {
             if (!appId) {
                 throw new Error("App ID is missing, and is required to run in production mode. " +
                     "To resolve, ensure the APP_ID environment variable is set.");
@@ -116801,22 +116806,22 @@ async function run(appFnOrArgv, additionalOptions) {
                 privateKey: "dummy value for setup, see #1512",
             }),
         });
-        await server.load(setup_1.setupAppFactory(host, port));
+        await server.load((0, setup_1.setupAppFactory)(host, port));
         await server.start();
         return server;
     }
     if (Array.isArray(appFnOrArgv)) {
-        const pkg = await pkg_conf_1.default("probot");
+        const pkg = await (0, pkg_conf_1.default)("probot");
         const combinedApps = async (app) => {
             await server.load(default_1.defaultApp);
             if (Array.isArray(pkg.apps)) {
                 for (const appPath of pkg.apps) {
-                    const appFn = await resolve_app_function_1.resolveAppFunction(appPath);
+                    const appFn = await (0, resolve_app_function_1.resolveAppFunction)(appPath);
                     await server.load(appFn);
                 }
             }
             const [appPath] = args;
-            const appFn = await resolve_app_function_1.resolveAppFunction(appPath);
+            const appFn = await (0, resolve_app_function_1.resolveAppFunction)(appPath);
             await server.load(appFn);
         };
         server = new server_1.Server(serverOptions);
@@ -116846,8 +116851,9 @@ Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.getLoggingMiddleware = void 0;
 const pino_http_1 = __importDefault(__nccwpck_require__(31778));
 const uuid_1 = __nccwpck_require__(75840);
-function getLoggingMiddleware(logger) {
-    return pino_http_1.default({
+function getLoggingMiddleware(logger, options) {
+    return (0, pino_http_1.default)({
+        ...options,
         logger: logger.child({ name: "http" }),
         customSuccessMessage(res) {
             const responseTime = Date.now() - res[pino_http_1.default.startTime];
@@ -116861,7 +116867,7 @@ function getLoggingMiddleware(logger) {
         },
         genReqId: (req) => req.headers["x-request-id"] ||
             req.headers["x-github-delivery"] ||
-            uuid_1.v4(),
+            (0, uuid_1.v4)(),
     });
 }
 exports.getLoggingMiddleware = getLoggingMiddleware;
@@ -116876,7 +116882,11 @@ exports.getLoggingMiddleware = getLoggingMiddleware;
 
 var __createBinding = (this && this.__createBinding) || (Object.create ? (function(o, m, k, k2) {
     if (k2 === undefined) k2 = k;
-    Object.defineProperty(o, k2, { enumerable: true, get: function() { return m[k]; } });
+    var desc = Object.getOwnPropertyDescriptor(m, k);
+    if (!desc || ("get" in desc ? !m.__esModule : desc.writable || desc.configurable)) {
+      desc = { enumerable: true, get: function() { return m[k]; } };
+    }
+    Object.defineProperty(o, k2, desc);
 }) : (function(o, m, k, k2) {
     if (k2 === undefined) k2 = k;
     o[k2] = m[k];
@@ -116906,8 +116916,8 @@ const express_handlebars_1 = __nccwpck_require__(21670);
 class Server {
     constructor(options = {}) {
         this.version = version_1.VERSION;
-        this.expressApp = express_1.default();
-        this.log = options.log || get_log_1.getLog().child({ name: "server" });
+        this.expressApp = (0, express_1.default)();
+        this.log = options.log || (0, get_log_1.getLog)().child({ name: "server" });
         this.probotApp = new options.Probot();
         this.state = {
             port: options.port,
@@ -116915,16 +116925,16 @@ class Server {
             webhookPath: options.webhookPath || "/",
             webhookProxy: options.webhookProxy,
         };
-        this.expressApp.use(logging_middleware_1.getLoggingMiddleware(this.log));
-        this.expressApp.use("/probot/static/", express_1.default.static(__nccwpck_require__.ab + "static"));
-        this.expressApp.use(this.state.webhookPath, webhooks_1.createNodeMiddleware(this.probotApp.webhooks, {
+        this.expressApp.use((0, logging_middleware_1.getLoggingMiddleware)(this.log, options.loggingOptions));
+        this.expressApp.use("/probot/static/", express_1.default.static((0, path_1.join)(__dirname, "..", "..", "static")));
+        this.expressApp.use(this.state.webhookPath, (0, webhooks_1.createNodeMiddleware)(this.probotApp.webhooks, {
             path: "/",
         }));
-        this.expressApp.engine("handlebars", express_handlebars_1.engine({
+        this.expressApp.engine("handlebars", (0, express_handlebars_1.engine)({
             defaultLayout: false,
         }));
         this.expressApp.set("view engine", "handlebars");
-        this.expressApp.set("views", __nccwpck_require__.ab + "views");
+        this.expressApp.set("views", (0, path_1.join)(__dirname, "..", "..", "views"));
         this.expressApp.get("/ping", (req, res) => res.end("PONG"));
     }
     async load(appFn) {
@@ -116940,7 +116950,7 @@ class Server {
         this.state.httpServer = (await new Promise((resolve, reject) => {
             const server = this.expressApp.listen(port, ...(host ? [host] : []), () => {
                 if (webhookProxy) {
-                    this.state.eventSource = webhook_proxy_1.createWebhookProxy({
+                    this.state.eventSource = (0, webhook_proxy_1.createWebhookProxy)({
                         logger: this.log,
                         path: webhookPath,
                         port: port,
@@ -116971,7 +116981,7 @@ class Server {
         return new Promise((resolve) => server.close(resolve));
     }
     router(path = "/") {
-        const newRouter = express_1.Router();
+        const newRouter = (0, express_1.Router)();
         this.expressApp.use(path, newRouter);
         return newRouter;
     }
@@ -116990,7 +117000,7 @@ Server.version = version_1.VERSION;
 Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.VERSION = void 0;
 // The version is set automatically before publish to npm
-exports.VERSION = "12.2.5";
+exports.VERSION = "12.3.1";
 //# sourceMappingURL=version.js.map
 
 /***/ }),
